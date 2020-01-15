@@ -1,7 +1,102 @@
+class PipePiece {
+  constructor(piece = 'start', direction = 'r') {
+    this.piece = piece
+    this.direction = direction
+    this.click = 0
+    this.emptyGrid = [
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0]
+    ]
+    this.grid = []
+
+    this.setUp()
+  }
+
+  setUp() {
+    this.grid = this.grabPiece()
+    this.rotatePiece()
+
+  }
+
+  rotatePiece() {
+    switch(this.direction) {
+      case 'r':
+        this.rotateArr()
+        this.rotateArr()
+        this.rotateArr()
+        break
+      case 'd':
+        this.rotateArr()
+        this.rotateArr()
+        break
+      case 'l':
+        this.rotateArr()
+        break
+      default:
+        break
+    }
+  }
+
+  grabPiece() {
+    switch(this.piece) {
+      case "start":
+        return [
+          [0, 0, 0],
+          [0, 1, 1],
+          [0, 0, 0]
+        ]
+        break
+      case "cross":
+        return [
+          [0, 1, 0],
+          [1, 1, 1],
+          [0, 1, 0]
+        ]
+        break
+      case "straight":
+        return [
+          [0, 1, 0],
+          [0, 1, 0],
+          [0, 1, 0]
+        ]
+        break
+      case "elbow":
+        return [
+          [0, 1, 0],
+          [0, 1, 1],
+          [0, 0, 0]
+        ]
+        break
+    }
+  }
+
+  rotateArr() {
+    let lenx = this.grid.length
+    let leny = this.grid[0].length
+    let newArr = []
+    for(let i = 0; i < lenx; i++) {
+      let row = []
+      for(let j = 0; j < leny; j++) {
+        row.push(0)
+      }
+      newArr.push(row)
+    }
+
+    for(let i = 0; i < lenx; i++) {
+      for(let j = 0; j < leny; j++) {
+        newArr[i][j] = this.grid[j][lenx - 1 - i]
+      }
+    }
+
+    this.grid = newArr
+  }
+}
+
 class PipeDream {
   constructor(N, M) {
-    this.N = N
-    this.M = M
+    this.N = N - N % 3
+    this.M = M - M % 3
     this.grid = this.createGrid()
     this.onDeck = []
     this.currentPiece = "0"
@@ -9,7 +104,7 @@ class PipeDream {
     this.circum = [[-1, -1],[-1, 0],[-1, 1],[0, -1],[0, 1],[1, -1],[1, 0],[1, 1]]
     this.cnt = 0
     this.direction = 0
-    this.startPoint = [Math.floor(Math.random() * Math.floor(this.M - 2)) + 3, Math.floor(Math.random() * Math.floor(this.N - 2)) + 3]
+    this.startPoint = [Math.floor(Math.random() * Math.floor(this.M - 3)), Math.floor(Math.random() * Math.floor(this.N - 3))]
     this.setUp()
   }
 
@@ -20,7 +115,7 @@ class PipeDream {
   }
 
   start() {
-    this.tracePath(this.startPoint[0], this.startPoint[1])
+    this.tracePath(this.startPoint[0] + 1, this.startPoint[1] + 1)
     console.log(this.startPoint)
   }
 
@@ -77,7 +172,31 @@ class PipeDream {
   }
 
   placeStart() {
-    this.dropPiece(this.startPoint[0], this.startPoint[1], new PipePiece('start').grid)
+    const x = this.startPoint[0]
+    const y = this.startPoint[1]
+    let pd = 'd'
+
+    if(x === 0 && y === 0) {
+      pd = Math.floor(Math.random() + Math.floor(2)) === 1 ? 'd' : 'l'
+    } else if(x === 0 && y > 0) {
+      switch(Math.floor(Math.random() + Math.floor(2))) {
+        case 0:
+          pd = 'd'
+          break
+        case 1:
+          pd = 'r'
+          break
+        case 2:
+          pd = 'u'
+          break
+      }
+    }
+    if(x === this.M && y === this.N) {
+      pd = Math.floor(Math.random() + Math.floor(2)) === 1 ? 'l' : 'u'
+    }
+    // alert(x, y)
+    console.log(x, y)
+    this.dropPiece(x, y, new PipePiece('start', pd).grid)
   }
 
   getDirection(str) {
