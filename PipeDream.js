@@ -153,6 +153,17 @@ class PipeDream {
     return `${Math.floor(Math.random() * Math.floor(3)) + 1}.${Math.floor(Math.random() * Math.floor(4))}`
   }
 
+  deletePiece(x, y) {
+    x = x - x % 3
+    y = y - y % 3
+
+    for(let i = 0; i < 3; i++) {
+      for(let j = 0; j < 3; j++) {
+        this.grid[x + i][y + j] = null
+      }
+    }
+    this.printBoard()
+  }
 
   printBoard() {
     console.clear()
